@@ -23,15 +23,25 @@ public class DebitGilConsumer : IConsumer<DebitGil>
         var user = await _userManager.FindByIdAsync(message.UserId.ToString())
             ?? throw new UnknownUserException(message.UserId);
 
+        if (user.MessageIds.Contains(context.MessageId.Value))
+        {
+            await context.Publish(new GilDebited(message.CorrelationId), context.CancellationToken);
+            return;
+        }
+
         user.Gil -= message.Gil;
 
-        if(user.Gil < 0)
+        if (user.Gil < 0)
         {
             throw new InsifficientFundsException(message.UserId, message.Gil);
         }
 
+        user.MessageIds.Add(context.MessageId.Value);
+
         await _userManager.UpdateAsync(user);
 
-        await context.Publish(new GilDebited(message.CorrelationId), context.CancellationToken);
+        var gilDebitedTask = context.Publish(new GilDebited(message.CorrelationId), context.CancellationToken);
+        var userUpdatedTask = context.Publish(new UserUpdated(user.Id, user.Email, user.Gil), context.CancellationToken);
+        await Task.WhenAll(gilDebitedTask, userUpdatedTask);
     }
 }

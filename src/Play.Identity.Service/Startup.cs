@@ -1,8 +1,10 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using GreenPipes;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -23,13 +25,15 @@ namespace Play.Identity.Service
 {
     public class Startup
     {
-        public const string AllowedOriginSetting = "AllowedOrigins";
-        public Startup(IConfiguration configuration)
+        private const string AllowedOriginSetting = "AllowedOrigins";
+        private readonly IHostEnvironment environment;
+        public Startup(IConfiguration configuration, IHostEnvironment environment)
         {
             Configuration = configuration;
+            this.environment = environment;
         }
 
-        public IConfiguration Configuration { get; }
+        private IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -37,7 +41,11 @@ namespace Play.Identity.Service
             BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
             var serviceSettings = Configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
             var mongoDbSettings = Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
-            var identityServerSettings = Configuration.GetSection(nameof(IdentityServerSettings)).Get<IdentityServerSettings>();
+
+
+            // services.AddDataProtection()
+            //                .PersistKeysToFileSystem(new DirectoryInfo(@"/home/app/.aspnet/DataProtection-Keys"))
+            //                .SetApplicationName("Play.Identity.Service");
 
             services.Configure<IdentitySettings>(Configuration.GetSection(nameof(IdentitySettings)))
                 .AddDefaultIdentity<ApplicationUser>()
@@ -48,24 +56,13 @@ namespace Play.Identity.Service
                     serviceSettings.ServiceName
                 );
 
-            services.AddMassTransitWithRabbitMQ(retryConfigurator => {
+            services.AddMassTransitWithRabbitMQ(retryConfigurator =>
+            {
                 retryConfigurator.Interval(3, TimeSpan.FromSeconds(5));
                 retryConfigurator.Ignore(typeof(UnknownUserException));
                 retryConfigurator.Ignore(typeof(InsifficientFundsException));
             });
-
-            services.AddIdentityServer(options =>
-            {
-                options.Events.RaiseSuccessEvents = true;
-                options.Events.RaiseFailureEvents = true;
-                options.Events.RaiseErrorEvents = true;
-                options.KeyManagement.KeyPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            })
-                .AddAspNetIdentity<ApplicationUser>()
-                .AddInMemoryApiScopes(identityServerSettings.ApiScopes)
-                .AddInMemoryApiResources(identityServerSettings.ApiResources)
-                .AddInMemoryClients(identityServerSettings.Clients)
-                .AddInMemoryIdentityResources(identityServerSettings.IdentityResources);
+            AddIdentityServer(services);
 
             services.AddLocalApiAuthentication();
 
@@ -77,6 +74,8 @@ namespace Play.Identity.Service
             });
         }
 
+
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
@@ -87,7 +86,7 @@ namespace Play.Identity.Service
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Play.Identity.Service v1"));
                 app.UseCors(builder =>
                 {
-                    builder.WithOrigins(Configuration[AllowedOriginSetting])
+                    builder.WithOrigins(Configuration[AllowedOriginSetting]!)
                     .AllowAnyHeader()
                     .AllowAnyMethod();
                 });
@@ -112,6 +111,34 @@ namespace Play.Identity.Service
                 endpoints.MapControllers();
                 endpoints.MapRazorPages();
             });
+        }
+        private void AddIdentityServer(IServiceCollection services)
+        {
+            var identityServerSettings = Configuration.GetSection(nameof(IdentityServerSettings)).Get<IdentityServerSettings>();
+            var builder = services.AddIdentityServer(options =>
+            {
+                options.Events.RaiseSuccessEvents = true;
+                options.Events.RaiseFailureEvents = true;
+                options.Events.RaiseErrorEvents = true;
+                options.KeyManagement.KeyPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            })
+                .AddAspNetIdentity<ApplicationUser>()
+                .AddInMemoryApiScopes(identityServerSettings.ApiScopes)
+                .AddInMemoryApiResources(identityServerSettings.ApiResources)
+                .AddInMemoryClients(identityServerSettings.Clients)
+                .AddInMemoryIdentityResources(identityServerSettings.IdentityResources);
+
+            // if (!environment.IsDevelopment())
+            // {
+            //     var identitySettings = Configuration.GetSection(nameof(IdentitySettings))
+            //                                               .Get<IdentitySettings>();
+            //     var cert = X509Certificate2.CreateFromPemFile(
+            //         identitySettings.CertificateCerFilePath,
+            //         identitySettings.CertificateKeyFilePath
+            //     );
+
+            //     builder.AddSigningCredential(cert);
+            // }
         }
     }
 }

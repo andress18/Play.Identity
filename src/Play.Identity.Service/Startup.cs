@@ -43,11 +43,7 @@ namespace Play.Identity.Service
             var mongoDbSettings = Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
 
 
-            // services.AddDataProtection()
-            //                .PersistKeysToFileSystem(new DirectoryInfo(@"/home/app/.aspnet/DataProtection-Keys"))
-            //                .SetApplicationName("Play.Identity.Service");
-
-            services.Configure<IdentitySettings>(Configuration.GetSection(nameof(IdentitySettings)))
+                services.Configure<IdentitySettings>(Configuration.GetSection(nameof(IdentitySettings)))
                 .AddDefaultIdentity<ApplicationUser>()
                 .AddRoles<ApplicationRole>()
                 .AddMongoDbStores<ApplicationUser, ApplicationRole, Guid>

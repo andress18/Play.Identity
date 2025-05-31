@@ -43,16 +43,17 @@ namespace Play.Identity.Service
             var mongoDbSettings = Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
 
 
-                services.Configure<IdentitySettings>(Configuration.GetSection(nameof(IdentitySettings)))
-                .AddDefaultIdentity<ApplicationUser>()
-                .AddRoles<ApplicationRole>()
-                .AddMongoDbStores<ApplicationUser, ApplicationRole, Guid>
-                (
-                    mongoDbSettings.ConnectionString,
-                    serviceSettings.ServiceName
-                );
+            services.Configure<IdentitySettings>(Configuration.GetSection(nameof(IdentitySettings)))
+            .AddDefaultIdentity<ApplicationUser>()
+            .AddRoles<ApplicationRole>()
+            .AddMongoDbStores<ApplicationUser, ApplicationRole, Guid>
+            (
+                mongoDbSettings.ConnectionString,
+                serviceSettings.ServiceName
+            );
 
-            services.AddMassTransitWithRabbitMQ(retryConfigurator =>
+            Console.WriteLine($"Using {serviceSettings.MessageBroker}");
+            services.AddMassTransitWithMessageBroker(Configuration, retryConfigurator =>
             {
                 retryConfigurator.Interval(3, TimeSpan.FromSeconds(5));
                 retryConfigurator.Ignore(typeof(UnknownUserException));

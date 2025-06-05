@@ -2,19 +2,17 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: identity-deployment
-  namespace: identity
 spec:
   selector:
     matchLabels:
-      app: identity-deployment
-  namespace: identity
+      app: identity
   template:
     metadata:
       labels:
-        app: identity-deployment
+        app: identity
     spec:
       containers:
-      - name: identity-deployment
+      - name: identity
         image: playeconomyaxsg.azurecr.io/play.identity:1.0.4
         env:
           - name: ServiceSettings__MessageBroker

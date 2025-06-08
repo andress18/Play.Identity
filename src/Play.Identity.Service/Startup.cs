@@ -17,6 +17,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
+using Play.Common.HealthChecks;
 using Play.Common.MassTransit;
 using Play.Common.Settings;
 using Play.Identity.Service.Entities;
@@ -74,15 +75,7 @@ namespace Play.Identity.Service
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Play.Identity.Service", Version = "v1" });
             });
 
-            services.AddHealthChecks().Add(new HealthCheckRegistration("mongoDb",
-                sp =>
-                {
-                    var client = new MongoClient(mongoDbSettings.ConnectionString);
-                    return new MongoDbHealthCheck(client);
-                },
-                default,
-                tags: ["ready"],
-                TimeSpan.FromSeconds(3)));
+            services.AddHealthChecks().AddMongoDb();
         }
 
 
@@ -121,15 +114,7 @@ namespace Play.Identity.Service
             {
                 endpoints.MapControllers();
                 endpoints.MapRazorPages();
-                endpoints.MapHealthChecks("/health/ready", new HealthCheckOptions
-                {
-                    // Only checks that the service is ready to process requests, that has the tag "ready"
-                    Predicate = check => check.Tags.Contains("ready")
-                });
-                endpoints.MapHealthChecks("/health/live", new HealthCheckOptions
-                {
-                    Predicate = check => false
-                });
+                endpoints.MapPlayEcnomyHealthChecks();
             });
         }
         private void AddIdentityServer(IServiceCollection services)

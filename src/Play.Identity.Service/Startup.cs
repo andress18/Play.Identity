@@ -69,6 +69,8 @@ namespace Play.Identity.Service
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Play.Identity.Service", Version = "v1" });
             });
+
+            services.AddHealthChecks();
         }
 
 
@@ -107,6 +109,7 @@ namespace Play.Identity.Service
             {
                 endpoints.MapControllers();
                 endpoints.MapRazorPages();
+                endpoints.MapHealthChecks("/health");
             });
         }
         private void AddIdentityServer(IServiceCollection services)

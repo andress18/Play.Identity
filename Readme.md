@@ -3,7 +3,7 @@ Identity libraries used by Play Economy services
 
 ## Create and publish package
 ```powershell
-$version="1.0.4"
+$version="1.0.5"
 $owner="dotnetMicroservicesCourseASGX"
 $gh_pat="[PATHERE]"
 
@@ -49,4 +49,14 @@ kubectl delete secret identity-secrets --namespace $namespace
 ## Create the kubernetes pod
 ```powershell
 kubectl apply -f .\kubernetes\identity.yaml --namespace $namespace
+```
+
+## Get the kubernetes pod
+```powershell
+kubectl get pods --namespace $namespace
+```
+
+## Delete the kubernetes pod
+```powershell
+kubectl delete pod identity --namespace $namespace
 ```

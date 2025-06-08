@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: identity
-        image: playeconomyaxsg.azurecr.io/play.identity:1.0.4
+        image: playeconomyaxsg.azurecr.io/play.identity:1.0.5
         env:
           - name: ServiceSettings__MessageBroker
             value: "SERVICEBUS"
@@ -38,6 +38,16 @@ spec:
             cpu: "500m"
         ports:
         - containerPort: 5002
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: 5002
+          initialDelaySeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: 5002
+          initialDelaySeconds: 30
 
 ---
 apiVersion: v1

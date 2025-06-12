@@ -20,7 +20,7 @@ namespace Play.Identity.Service
                 if (context.HostingEnvironment.IsProduction())
                 {
                     config.AddAzureKeyVault(
-                        new Uri("htps://playeconomyaxsg.vault.azure.net/"),
+                        new Uri("https://playeconomyaxsg.vault.azure.net"),
                         new DefaultAzureCredential()
                     );
                 }

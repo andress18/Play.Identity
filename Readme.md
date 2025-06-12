@@ -3,7 +3,7 @@ Identity libraries used by Play Economy services
 
 ## Create and publish package
 ```powershell
-$version="1.0.6"
+$version="1.0.6.1"
 $owner="dotnetMicroservicesCourseASGX"
 $gh_pat="[PATHERE]"
 
@@ -24,7 +24,11 @@ docker build --secret id=GH_OWNER --secret id=GH_PAT -t "$appname.azurecr.io/pla
 $adminPass="[PASS HERE]"
 $cosmosDbConnString="[CONN STRING HERE]"
 $serviceBusConnString="[CONN STRING HERE]"
-docker run -it --rm -p 5002:5002 --name identity -e MongoDbSettings__ConnectionString=$cosmosDbConnString -e ServiceBusSettings__ConnectionString=$serviceBusConnString -e ServiceSettings__MessageBroker="SERVICEBUS" -e IdentitySettings__AdminUserPassword=$adminPass play.identity:$version
+docker run -it --rm -p 5002:5002 --name identity 
+-e MongoDbSettings__ConnectionString=$cosmosDbConnString 
+-e ServiceBusSettings__ConnectionString=$serviceBusConnString 
+-e ServiceSettings__MessageBroker="SERVICEBUS" 
+-e IdentitySettings__AdminUserPassword=$adminPass play.identity:$version
 ```
 
 ## Publish the docker image
@@ -38,10 +42,6 @@ $namespace="identity"
 kubectl create namespace $namespace
 ```
 
-## Create the kubernetes secrets
-```powershell
-kubectl create secret generic identity-secrets --namespace $namespace --from-literal=cosmosdb-connectionstring=$cosmosDbConnString --from-literal=servicebus-connectionstring=$serviceBusConnString --from-literal=admin-user-password=$adminPass -n $namespace
-```
 ## delete the kubernetes secrets
 ```powershell
 kubectl delete secret identity-secrets --namespace $namespace
@@ -61,7 +61,7 @@ kubectl get pods --namespace $namespace
 kubectl delete pod identity --namespace $namespace
 ```
 
-## Creating the Azire Managed Identity and grantinng access to key vault secrets
+## Creating the Azure Managed Identity and grantinng access to key vault secrets
 ```powershell 
 az identity create --resource-group $appname --name $namespace
 $IDENTITY_CLIENT_ID=az identity show -g $appname -n $namespace --query clientId -otsv
@@ -69,7 +69,7 @@ az keyvault set-policy -n $appname --secret-permissions get list --spn $IDENTITY
 
 ``` 
 
-# Creating the Azire Managed Identity and grantinng access to key vault secrets
+<!-- # Creating the Azure Managed Identity and grantinng access to key vault secrets
 ```powershell
 az identity create --resource-group $appname --name $namespace
 $IDENTITY_CLIENT_ID=az identity show -g $appname -n $namespace --query clientId -otsv
@@ -83,7 +83,7 @@ $KEYVAULT_ID = az keyvault show --name $appname --query id -otsv
 
 # Assign the "Key Vault Secrets User" role to the managed identity
 az role assignment create --role "Key Vault Secrets User" --assignee $IDENTITY_PRINCIPAL_ID --scope $KEYVAULT_ID
-```
+``` -->
 
 ## Establish the federeated identity credential
 ```powershell

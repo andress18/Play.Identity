@@ -15,15 +15,17 @@ spec:
       serviceAccountName: identity-serviceaccount
       containers:
       - name: identity
-        image: playeconomyaxsg.azurecr.io/play.identity:1.0.7
+        image: playeconomyaxsg.azurecr.io/play.identity:1.0.8.1
         env:
           - name: ServiceSettings__MessageBroker
             value: SERVICEBUS
           - name: ServiceSettings__KeyVaultName
             value: playeconomyaxsg
+          - name: IdentitySettings__PathBase
+            value: /identity-svc/
         resources:
           limits:
-            memory: "128Mi"
+            memory: "256Mi"
             cpu: "500m"
         ports:
         - containerPort: 5002
@@ -44,7 +46,7 @@ kind: Service
 metadata:
   name: identity-service
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: identity
   ports:

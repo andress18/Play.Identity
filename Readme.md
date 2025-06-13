@@ -61,14 +61,6 @@ kubectl get pods --namespace $namespace
 kubectl delete pod identity --namespace $namespace
 ```
 
-## Creating the Azure Managed Identity and grantinng access to key vault secrets
-```powershell 
-az identity create --resource-group $appname --name $namespace
-$IDENTITY_CLIENT_ID=az identity show -g $appname -n $namespace --query clientId -otsv
-az keyvault set-policy -n $appname --secret-permissions get list --spn $IDENTITY_CLIENT_ID
-
-``` 
-
 <!-- # Creating the Azure Managed Identity and grantinng access to key vault secrets
 ```powershell
 az identity create --resource-group $appname --name $namespace
@@ -84,6 +76,14 @@ $KEYVAULT_ID = az keyvault show --name $appname --query id -otsv
 # Assign the "Key Vault Secrets User" role to the managed identity
 az role assignment create --role "Key Vault Secrets User" --assignee $IDENTITY_PRINCIPAL_ID --scope $KEYVAULT_ID
 ``` -->
+
+## Creating the Azure Managed Identity and grantinng access to key vault secrets
+```powershell 
+az identity create --resource-group $appname --name $namespace
+$IDENTITY_CLIENT_ID=az identity show -g $appname -n $namespace --query clientId -otsv
+az keyvault set-policy -n $appname --secret-permissions get list --spn $IDENTITY_CLIENT_ID
+
+``` 
 
 ## Establish the federeated identity credential
 ```powershell

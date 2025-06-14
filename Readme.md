@@ -3,7 +3,7 @@ Identity libraries used by Play Economy services
 
 ## Create and publish package
 ```powershell
-$version="1.0.8.1"
+$version="1.0.9"
 $owner="dotnetMicroservicesCourseASGX"
 $gh_pat="[PATHERE]"
 
@@ -91,3 +91,9 @@ $AKS_OIDC_ISSUER=az aks show -g $appname -n $appname --query "oidcIssuerProfile.
 
 az identity federated-credential create --name $namespace --identity-name $namespace --resource-group $appname --issuer $AKS_OIDC_ISSUER --subject "system:serviceaccount:${namespace}:${namespace}-serviceaccount" 
 ```
+
+## Create the signing certificate
+```powershell
+kubectl apply -f .\kubernetes\signing-cer.yaml --namespace $namespace
+```
+

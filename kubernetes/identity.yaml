@@ -15,7 +15,7 @@ spec:
       serviceAccountName: identity-serviceaccount
       containers:
       - name: identity
-        image: playeconomyaxsg.azurecr.io/play.identity:1.0.8.1
+        image: playeconomyaxsg.azurecr.io/play.identity:1.0.9
         env:
           - name: ServiceSettings__MessageBroker
             value: SERVICEBUS
@@ -23,6 +23,10 @@ spec:
             value: playeconomyaxsg
           - name: IdentitySettings__PathBase
             value: /identity-svc/
+          - name: IdentitySettings__CertificateCerFilePath
+            value: "/certificates/certificate.crt"
+          - name: IdentitySettings__CertificateKeyFilePath
+            value: "/certificates/certificate.key"
         resources:
           limits:
             memory: "256Mi"
@@ -39,6 +43,19 @@ spec:
             path: /health/ready
             port: 5002
           initialDelaySeconds: 30
+        volumeMounts:
+          - name: certificate-volume
+            mountPath: /certificates
+            readOnly: true
+      volumes:
+        - name: certificate-volume
+          secret:
+            secretName: signing-cert
+            items:
+              - key: tls.key
+                path: certificate.key
+              - key: tls.crt
+                path: certificate.crt
 
 ---
 apiVersion: v1

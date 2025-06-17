@@ -1,11 +1,13 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: signing-cert
+  name: axsg1-signing-cert
 spec:
-  secretName: signing-cert
+  secretName: axsg1-signing-cert
   issuerRef:
     name: letsencrypt-prod
     kind: ClusterIssuer
   dnsNames:
-    - "playeconomyaxsg.eastus.cloudapp.azure.com"
+    - "playeconomyaxsg1.eastus.cloudapp.azure.com"
+  privateKey:
+    rotationPolicy: Never

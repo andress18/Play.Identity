@@ -150,19 +150,19 @@ namespace Play.Identity.Service
                 .AddInMemoryApiResources(identityServerSettings.ApiResources)
                 .AddInMemoryClients(identityServerSettings.Clients)
                 .AddInMemoryIdentityResources(identityServerSettings.IdentityResources)
-                .AddDeveloperSigningCredential();
+                ;
 
-            // if (!environment.IsDevelopment())
-            // {
-            //     var identitySettings = Configuration.GetSection(nameof(IdentitySettings))
-            //                                               .Get<IdentitySettings>();
-            //     var cert = X509Certificate2.CreateFromPemFile(
-            //         identitySettings.CertificateCerFilePath,
-            //         identitySettings.CertificateKeyFilePath
-            //     );
+            if (!environment.IsDevelopment())
+            {
+                var identitySettings = Configuration.GetSection(nameof(IdentitySettings))
+                                                          .Get<IdentitySettings>();
+                var cert = X509Certificate2.CreateFromPemFile(
+                    identitySettings.CertificateCerFilePath,
+                    identitySettings.CertificateKeyFilePath
+                );
 
-            //     builder.AddSigningCredential(cert);
-            // }
+                builder.AddSigningCredential(cert);
+            }
         }
     }
 }

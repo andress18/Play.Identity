@@ -15,12 +15,12 @@ spec:
       serviceAccountName: identity-serviceaccount
       containers:
       - name: identity
-        image: playeconomyaxsg.azurecr.io/play.identity:1.0.9
+        image: playeconomyaxsg1.azurecr.io/play.identity:1.0.10
         env:
           - name: ServiceSettings__MessageBroker
             value: SERVICEBUS
           - name: ServiceSettings__KeyVaultName
-            value: playeconomyaxsg
+            value: playeconomyaxsg1
           - name: IdentitySettings__PathBase
             value: /identity-svc/
           - name: IdentitySettings__CertificateCerFilePath
@@ -50,7 +50,7 @@ spec:
       volumes:
         - name: certificate-volume
           secret:
-            secretName: signing-cert
+            secretName: axsg1-signing-cert
             items:
               - key: tls.key
                 path: certificate.key
@@ -76,6 +76,6 @@ kind: ServiceAccount
 metadata:
   name: identity-serviceaccount
   annotations:
-    azure.workload.identity/client-id: 5e794df0-2d7d-43cc-9518-70b8ad4f4c20
+    azure.workload.identity/client-id: d1984c8c-6add-4c03-b658-57522698dc38
   labels:
     azure.workload.identity/use: "true"

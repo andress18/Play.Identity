@@ -15,22 +15,29 @@ spec:
       serviceAccountName: identity-serviceaccount
       containers:
       - name: identity
-        image: playeconomyaxsg1.azurecr.io/play.identity:1.0.10
+        image: playeconomyaxsg1.azurecr.io/play.identity:1.0.12
         env:
-          - name: ServiceSettings__MessageBroker
-            value: SERVICEBUS
-          - name: ServiceSettings__KeyVaultName
-            value: playeconomyaxsg1
-          - name: IdentitySettings__PathBase
-            value: /identity-svc/
-          - name: IdentitySettings__CertificateCerFilePath
-            value: "/certificates/certificate.crt"
-          - name: IdentitySettings__CertificateKeyFilePath
-            value: "/certificates/certificate.key"
+        - name: ServiceSettings__MessageBroker
+          value: SERVICEBUS
+        - name: ServiceSettings__KeyVaultName
+          value: playeconomyaxsg1
+        - name: IdentitySettings__PathBase
+          value: /identity-svc/
+        - name: IdentitySettings__CertificateCerFilePath
+          value: "/certificates/certificate.crt"
+        - name: IdentitySettings__CertificateKeyFilePath
+          value: "/certificates/certificate.key"
+        - name: IdentitySettings__Clients__0__RedirectUris__0
+          value: "https://playeconomyaxsg1.eastus.cloudapp.azure.com/authentication/login-callback"
+        - name: IdentitySettings__Clients__0__PostLogoutRedirectUris__0
+          value: "https://playeconomyaxsg1.eastus.cloudapp.azure.com/authentication/logout-callback"
         resources:
-          limits:
+          requests:
             memory: "256Mi"
             cpu: "500m"
+          limits:
+            memory: "512Mi"
+            cpu: "1000m"
         ports:
         - containerPort: 5002
         livenessProbe:

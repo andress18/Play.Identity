@@ -8,6 +8,6 @@ spec:
     name: letsencrypt-prod
     kind: ClusterIssuer
   dnsNames:
-    - "playeconomyaxsg1.eastus.cloudapp.azure.com"
+    - playeconomyaxsg1.eastus.cloudapp.azure.com
   privateKey:
     rotationPolicy: Never

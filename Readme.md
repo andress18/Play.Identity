@@ -3,7 +3,7 @@ Identity libraries used by Play Economy services
 
 ## Create and publish package
 ```powershell
-$version="1.0.10"
+$version="1.0.12"
 $owner="dotnetMicroservicesCourseASGX"
 $gh_pat="[PATHERE]"
 

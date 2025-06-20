@@ -27,9 +27,9 @@ spec:
           value: "/certificates/certificate.crt"
         - name: IdentitySettings__CertificateKeyFilePath
           value: "/certificates/certificate.key"
-        - name: IdentitySettings__Clients__0__RedirectUris__0
+        - name: IdentityServerSettings__Clients__0__RedirectUris__0
           value: "https://playeconomyaxsg1.eastus.cloudapp.azure.com/authentication/login-callback"
-        - name: IdentitySettings__Clients__0__PostLogoutRedirectUris__0
+        - name: IdentityServerSettings__Clients__0__PostLogoutRedirectUris__0
           value: "https://playeconomyaxsg1.eastus.cloudapp.azure.com/authentication/logout-callback"
         resources:
           requests:
